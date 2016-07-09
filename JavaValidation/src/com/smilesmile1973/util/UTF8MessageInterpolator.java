@@ -15,11 +15,11 @@ import javax.validation.MessageInterpolator;
  * @Since 22/05/2016
  *
  */
-public class UTF8MessageInterPolator implements MessageInterpolator {
+public class UTF8MessageInterpolator implements MessageInterpolator {
 	
 	private ResourceBundle resourceBundle = UTF8ResourcesBundle.UTF8ValidatorMessages.getResourceBundle();
 
-	public UTF8MessageInterPolator() {
+	public UTF8MessageInterpolator() {
 		super();
 	}
 
