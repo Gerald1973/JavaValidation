@@ -3,6 +3,8 @@ package com.smilesmile1973.beans;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.smilesmile1973.validators.group.GroupCustomer;
+
 /**
  * Class representing one customer.
  * 
@@ -19,20 +21,20 @@ public class Customer {
 	/**
 	 * Clientnumber.
 	 */
-	@NotNull(message = "{Customer.clientNumber.NotNull}")
+	@NotNull(message = "{Customer.clientNumber.NotNull}", groups = GroupCustomer.class)
 	private String clientNumber;
 
 	/**
 	 * Not null
 	 */
-	@NotNull
+	@NotNull(message = "{Customer.firstName.NotNull}", groups = GroupCustomer.class)
 	private String firstName;
 
 	/**
 	 * 
 	 */
 	@NotNull
-	@Size(min = 2, max = 30, message = "{Customer.lastName.Size}")
+	@Size(min = 2, max = 30, message = "{Customer.lastName.Size}", groups = GroupCustomer.class)
 	private String lastName;
 
 	/**

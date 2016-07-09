@@ -20,8 +20,26 @@ public class Delivery {
 	 * @see Customer
 	 */
 	@Valid
-	@NotNull
+	@NotNull(message="{Delivery.customer.NotNull}")
 	private Customer customer;
+	
+	@Valid
+	@NotNull(message="{Delivery.car.NotNull}")
+	private Car car;
+
+	/**
+	 * @return the car
+	 */
+	public Car getCar() {
+		return car;
+	}
+
+	/**
+	 * @param car the car to set
+	 */
+	public void setCar(Car car) {
+		this.car = car;
+	}
 
 	/**
 	 * The {@link #timeOut} to be < {@link #arrivalTime}

@@ -7,9 +7,14 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import javax.validation.groups.Default;
 
+import com.smilesmile1973.beans.Car;
 import com.smilesmile1973.beans.Customer;
 import com.smilesmile1973.beans.Delivery;
+import com.smilesmile1973.validators.DeliveryOrderValidation;
+import com.smilesmile1973.validators.group.GroupCar;
+import com.smilesmile1973.validators.group.GroupCustomer;
 
 /**
  * Execution class
@@ -28,6 +33,7 @@ public final class RunMe {
 		for (final ConstraintViolation<?> constraintViolation : violations) {
 			System.out.println(constraintViolation.getMessage());
 		}
+		System.out.println("====================================================");
 	}
 
 	/**
@@ -46,8 +52,13 @@ public final class RunMe {
 		delivery.setCustomer(new Customer());
 		delivery.getCustomer().setLastName("O");
 		delivery.getCustomer().setFirstName("Gérald");
+		delivery.setCar(new Car());
+		delivery.setTimeOut(new Date());
 
-		final Set<ConstraintViolation<Delivery>> violations = validator.validate(delivery);
+		Set<ConstraintViolation<Delivery>> violations = validator.validate(delivery, DeliveryOrderValidation.class);
+		displayMessages(violations);
+
+		violations = validator.validate(delivery, GroupCar.class, GroupCustomer.class, Default.class);
 		displayMessages(violations);
 	}
 
