@@ -8,6 +8,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import com.smilesmile1973.beans.Customer;
 import com.smilesmile1973.beans.Delivery;
 
 public class RunMe {
@@ -17,8 +18,11 @@ public class RunMe {
 		//Beans initialisations
 		Delivery delivery = new Delivery();
 		delivery.setArrivalTime(new Date());
-		delivery.setClientNumber("12313546544");
 		delivery.setArrivalTime(new Date());
+		delivery.setCustomer(new Customer());
+		delivery.getCustomer().setLastName("O");
+		delivery.getCustomer().setFirstName("Gérald");
+		
 		Set<ConstraintViolation<Delivery>> violations = validator.validate(delivery);
 		displayMessages(violations);
 	}

@@ -2,33 +2,31 @@ package com.smilesmile1973.beans;
 
 import java.util.Date;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 public class Delivery {
 	/**
 	 * The {@link #arrivalTime} has to be > to {@link #timeOut}
 	 */
-	
 	private Date arrivalTime;
-
-	/**
-	 * The client number needs to have at less 5 character
-	 */
-	@NotNull(message="{validation.clientNumber.notNull}")
-	private String clientNumber;
+	
+	@Valid
+	@NotNull
+	private Customer customer;
 
 	/**
 	 * The {@link #timeOut} to be < {@link #arrivalTime}
 	 */
-	@NotNull(message="{validation.delivery.timeout.notNull}")
+	@NotNull(message="{Delivery.timeOut.NotNull}")
 	private Date timeOut;
 
 	public Date getArrivalTime() {
 		return arrivalTime;
 	}
 
-	public String getClientNumber() {
-		return clientNumber;
+	public Customer getCustomer() {
+		return customer;
 	}
 
 	public Date getTimeOut() {
@@ -39,8 +37,8 @@ public class Delivery {
 		this.arrivalTime = arrivalTime;
 	}
 
-	public void setClientNumber(String clientNumber) {
-		this.clientNumber = clientNumber;
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
 	}
 
 	public void setTimeOut(Date timeOut) {
