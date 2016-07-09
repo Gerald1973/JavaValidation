@@ -16,21 +16,21 @@ import java.util.ResourceBundle;
  */
 public class UTF8Control extends ResourceBundle.Control {
 	
-	/* (non-Javadoc)
+	/**
+	 * (non-Javadoc)
 	 * @see java.util.ResourceBundle.Control#newBundle(java.lang.String, java.util.Locale, java.lang.String, java.lang.ClassLoader, boolean)
 	 */
 	@Override
 	public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
 			throws IllegalAccessException, InstantiationException, IOException {
-		// The below is a copy of the default implementation.
-		String bundleName = toBundleName(baseName, locale);
-		String resourceName = toResourceName(bundleName, "properties");
+		final String bundleName = toBundleName(baseName, locale);
+		final String resourceName = toResourceName(bundleName, "properties");
 		ResourceBundle bundle = null;
 		InputStream stream = null;
 		if (reload) {
-			URL url = loader.getResource(resourceName);
+			final URL url = loader.getResource(resourceName);
 			if (url != null) {
-				URLConnection connection = url.openConnection();
+				final URLConnection connection = url.openConnection();
 				if (connection != null) {
 					connection.setUseCaches(false);
 					stream = connection.getInputStream();

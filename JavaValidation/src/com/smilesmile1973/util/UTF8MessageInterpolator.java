@@ -20,15 +20,31 @@ import org.apache.commons.lang.ArrayUtils;
  */
 public class UTF8MessageInterpolator implements MessageInterpolator {
 
-	private ResourceBundle resourceBundle = UTF8ResourcesBundle.UTF8ValidatorMessages.getResourceBundle();
-
-	public UTF8MessageInterpolator() {
-		super();
-	}
-
+	/**
+	 * RegEx to determine the string to replace.
+	 */
 	private static final Pattern MESSAGE_PARAMETER_PATTERN = Pattern.compile("(\\{[^\\}]+?\\})");
 
-	/*
+	/**
+	 * @see ResourceBundle
+	 */
+	private final ResourceBundle resourceBundle;
+
+	/**
+	 * Constructor
+	 */
+	public UTF8MessageInterpolator() {
+		resourceBundle = UTF8ResourcesBundle.UTF8ValidatorMessages.getResourceBundle();
+	}
+
+	/**
+	 * @return the resourceBundle
+	 */
+	public ResourceBundle getResourceBundle() {
+		return resourceBundle;
+	}
+
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see javax.validation.MessageInterpolator#interpolate(java.lang.String,
@@ -39,11 +55,11 @@ public class UTF8MessageInterpolator implements MessageInterpolator {
 		return interpolateMessage(message, context.getConstraintDescriptor().getAttributes(), Locale.getDefault());
 	}
 
-	/*
+	/**
 	 * (non-Javadoc)
 	 * 
 	 * @see javax.validation.MessageInterpolator#interpolate(java.lang.String,
-	 * javax.validation.MessageInterpolator.Context, java.util.Locale)
+	 *      javax.validation.MessageInterpolator.Context, java.util.Locale)
 	 */
 	@Override
 	public String interpolate(String message, Context context, Locale locale) {
@@ -52,41 +68,10 @@ public class UTF8MessageInterpolator implements MessageInterpolator {
 
 	private String interpolateMessage(String message, Map<String, Object> annotationParameters, Locale locale) {
 		String userBundleResolvedMessage;
-		String resolvedMessage = message;
+		final String resolvedMessage = message;
 		userBundleResolvedMessage = replaceVariables(resolvedMessage, resourceBundle, locale, true);
 		userBundleResolvedMessage = replaceAnnotationAttributes(userBundleResolvedMessage, annotationParameters);
 		return userBundleResolvedMessage;
-	}
-
-	private String replaceVariables(String message, ResourceBundle bundle, Locale locale, boolean recurse) {
-		Matcher matcher = MESSAGE_PARAMETER_PATTERN.matcher(message);
-		StringBuffer sb = new StringBuffer();
-		String resolvedParameterValue;
-		while (matcher.find()) {
-			String parameter = matcher.group(1);
-			resolvedParameterValue = resolveParameter(parameter, bundle, locale, recurse);
-			matcher.appendReplacement(sb, Matcher.quoteReplacement(resolvedParameterValue));
-		}
-		matcher.appendTail(sb);
-		return sb.toString();
-	}
-
-	private String resolveParameter(String parameterName, ResourceBundle bundle, Locale locale, boolean recurse) {
-		String parameterValue;
-		try {
-			if (bundle != null) {
-				parameterValue = bundle.getString(removeCurlyBrace(parameterName));
-				if (recurse) {
-					parameterValue = replaceVariables(parameterValue, bundle, locale, recurse);
-				}
-			} else {
-				parameterValue = parameterName;
-			}
-		} catch (MissingResourceException e) {
-			// return parameter itself
-			parameterValue = parameterName;
-		}
-		return parameterValue;
 	}
 
 	private String removeCurlyBrace(String parameter) {
@@ -95,24 +80,54 @@ public class UTF8MessageInterpolator implements MessageInterpolator {
 
 	private String replaceAnnotationAttributes(String message, Map<String, Object> annotationParameters) {
 		final Matcher matcher = MESSAGE_PARAMETER_PATTERN.matcher(message);
-		final StringBuffer sb = new StringBuffer(64);
+		final StringBuffer stringBuilder = new StringBuffer(64);
 		while (matcher.find()) {
 			String resolvedParameterValue;
 			final String parameter = matcher.group(1);
 			final Object variable = annotationParameters.get(removeCurlyBrace(parameter));
-			if (variable != null) {
+			if (variable == null) {
+				resolvedParameterValue = parameter;
+			} else {
 				if (variable.getClass().isArray()) {
 					resolvedParameterValue = ArrayUtils.toString(variable);
 				} else {
 					resolvedParameterValue = variable.toString();
 				}
-			} else {
-				resolvedParameterValue = parameter;
 			}
-			matcher.appendReplacement(sb, sanitizeForAppendReplacement(resolvedParameterValue));
+			matcher.appendReplacement(stringBuilder, sanitizeForAppendReplacement(resolvedParameterValue));
 		}
-		matcher.appendTail(sb);
-		return sb.toString();
+		matcher.appendTail(stringBuilder);
+		return stringBuilder.toString();
+	}
+
+	private String replaceVariables(String message, ResourceBundle bundle, Locale locale, boolean recurse) {
+		final Matcher matcher = MESSAGE_PARAMETER_PATTERN.matcher(message);
+		final StringBuffer stringBuffer = new StringBuffer();
+		String resolvedParameterValue;
+		while (matcher.find()) {
+			final String parameter = matcher.group(1);
+			resolvedParameterValue = resolveParameter(parameter, bundle, locale, recurse);
+			matcher.appendReplacement(stringBuffer, Matcher.quoteReplacement(resolvedParameterValue));
+		}
+		matcher.appendTail(stringBuffer);
+		return stringBuffer.toString();
+	}
+
+	private String resolveParameter(String parameterName, ResourceBundle bundle, Locale locale, boolean recurse) {
+		String parameterValue;
+		try {
+			if (bundle == null) {
+				parameterValue = parameterName;
+			} else {
+				parameterValue = bundle.getString(removeCurlyBrace(parameterName));
+				if (recurse) {
+					parameterValue = replaceVariables(parameterValue, bundle, locale, recurse);
+				}
+			}
+		} catch (MissingResourceException e) {
+			parameterValue = parameterName;
+		}
+		return parameterValue;
 	}
 
 	/**

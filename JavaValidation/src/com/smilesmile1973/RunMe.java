@@ -11,25 +11,46 @@ import javax.validation.ValidatorFactory;
 import com.smilesmile1973.beans.Customer;
 import com.smilesmile1973.beans.Delivery;
 
-public class RunMe {
-	public static void main(String[] args){
-		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-		Validator validator = factory.getValidator();
-		//Beans initialisations
-		Delivery delivery = new Delivery();
+/**
+ * Execution class
+ * 
+ * @author Gérald Maréchal
+ *
+ */
+public final class RunMe {
+
+	/**
+	 * Print the messages on the console
+	 * 
+	 * @param violations
+	 */
+	public static <T> void displayMessages(Set<ConstraintViolation<T>> violations) {
+		for (final ConstraintViolation<?> constraintViolation : violations) {
+			System.out.println(constraintViolation.getMessage());
+		}
+	}
+
+	/**
+	 * Entry point
+	 * 
+	 * @param args
+	 *            not used
+	 */
+	public static void main(String[] args) {
+		final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		final Validator validator = factory.getValidator();
+		// Beans initialisations
+		final Delivery delivery = new Delivery();
 		delivery.setArrivalTime(new Date());
 		delivery.setArrivalTime(new Date());
 		delivery.setCustomer(new Customer());
 		delivery.getCustomer().setLastName("O");
 		delivery.getCustomer().setFirstName("Gérald");
-		
-		Set<ConstraintViolation<Delivery>> violations = validator.validate(delivery);
+
+		final Set<ConstraintViolation<Delivery>> violations = validator.validate(delivery);
 		displayMessages(violations);
 	}
-	
-	public static <T> void displayMessages(Set<ConstraintViolation<T>> violations){
-		for (ConstraintViolation<?> constraintViolation : violations) {
-			System.out.println(constraintViolation.getMessage());
-		}
+
+	private RunMe() {
 	}
 }
